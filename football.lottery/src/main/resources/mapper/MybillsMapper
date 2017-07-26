@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.azhar.lottery.dao.billsdao.IMybillsDao">
+    <insert id="insertBills" parameterType="com.azhar.lottery.bean.mybills.Mybills" useGeneratedKeys="true" keyProperty="id">
+
+        insert into my_bills(time,income,expenditure,type,userID)
+        values(#{time},#{income},#{expenditure},#{type},#{userID})
+    </insert>
+
+    <resultMap id="selectmybillsMap" type="com.azhar.lottery.bean.mybills.Mybills">
+        <result column="userID" property="userID"/>
+        <result column="time" property="time"/>
+        <result column="income" property="income" javaType="float"/>
+        <result column="expenditure" property="expenditure" javaType="float"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+
+    <select id="selectAllBills" resultMap="selectmybillsMap">
+        SELECT  mb.* FROM my_bills mb WHERE mb.userID=#{userID} ORDER BY CONVERT (mb.time using utf8)
+    </select>
+
+
+
+</mapper>

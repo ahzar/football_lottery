@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.azhar.lottery.dao.gamadao.WesternGameLinesDao">
+    <insert id="insertWesternGameLines" parameterType="com.azhar.lottery.bean.game.WesternGameLines" useGeneratedKeys="true" keyProperty="lotteryCorporationsID">
+
+        insert into western_lines(gameID,homeTeamLines,visitingTeamLines,drawLines,compName)
+        values(#{gameID},#{homeTeamLines},#{visitingTeamLines},#{drawLines},#{compName})
+    </insert>
+
+    <resultMap id="resultMapWesternLines" type="com.azhar.lottery.bean.game.WesternGameLines">
+        <id column="gameID" property="gameID"/>
+        <result column="homeTeamLines" property="homeTeamLines"/>
+        <result column="visitingTeamLines" property="visitingTeamLines"/>
+        <result column="drawLines" property="drawLines"/>
+        <result column="compName" property="compName"/>
+    </resultMap>
+
+    </mapper>

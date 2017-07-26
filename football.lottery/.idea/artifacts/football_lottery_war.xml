@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="football.lottery:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="Maven001.war">
+      <element id="artifact" artifact-name="football.lottery:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.azhar.lottery.dao.gamadao.IGameInfoDao">
+    <insert id="insertGameInfo" parameterType="com.azhar.lottery.bean.game.GameInfo" useGeneratedKeys="true" keyProperty="id">
+
+        <!--<selectKey resultType="int" keyProperty="id" order="AFTER">-->
+            <!--select @@IDENTITY as id-->
+        <!--</selectKey>-->
+        insert into game_info(gameTime,gameType,userID,handicap,homeTeam,visitingTeam,
+        corner,totalGoals,halfTimeScore,overall,description)
+        values(#{gameTime},#{gameType},#{userID},#{handicap},#{homeTeam},#{visitingTeam}
+        ,#{corner},#{totalGoals},#{halfTimeScore},#{overall},#{description})
+    </insert>
+    <delete id="deleteCarById" parameterType="int">
+        delete from game_info where id = #{id}
+    </delete>
+    <update id="updateCar" parameterType="com.azhar.lottery.bean.game.GameInfo">
+        update game_info
+        <set>
+            <if test="number != null">
+                number = #{number},
+            </if>
+            <if test="orgId != null">
+                org_id = #{orgId},
+            </if>
+            <if test="updateUserid != null">
+                update_userid = #{updateUserid},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+     <!--//  private String gameTime;   //比赛时间-->
+    <!--private String gameType = "0";   // 比赛类型   0-联赛  1-杯赛   2-友谊赛   默认 0 ;-->
+    <!--//    private String westernLotteryCorporationsID;         // 西方博彩公司ID-->
+    <!--//    private String asiaLotteryCorporationsID;            //亚洲博彩公司-->
+    <!--private ArrayList<WesternGameLines> westernGameLines;       // 西方胜负赔率;-->
+    <!--private ArrayList<AsiaGameLines> asiaGameLines ;               // 亚盘盘口赔率-->
+    <!--private String userID;              //用户ID;-->
+    <!--private String handicap;             // 让球盘；-->
+    <!--private String homeTeam;                // 主队；-->
+    <!--private String visitingTeam;            //客队；-->
+    <!--private String corner;                  // 角球-->
+    <!--private String totalGoals;               //总进球-->
+    <!--private String halfTimeScore;           // 半场比分-->
+    <!--private String overall;                 //全场比分-->
+    <!--private long id;                        //  比赛ID；-->
+    <!--private String description;-->
+    <resultMap id="resultMapGameInfo" type="com.azhar.lottery.bean.game.GameInfo">
+        <id column="id" property="id" />
+        <result column="gameTime" property="gameTime" />
+        <result column="gameType" property="gameType" />
+        <result column="userID" property="userID" />
+        <result column="handicap" property="handicap" />
+        <result column="homeTeam" property="homeTeam" />
+        <result column="visitingTeam" property="visitingTeam" />
+        <result column="corner" property="corner" />
+        <result column="totalGoals" property="totalGoals" />
+        <result column="halfTimeScore" property="halfTimeScore" />
+        <result column="overall" property="overall" />
+        <result column="description" property="description" typeHandler="com.azhar.lottery.utils.ConvertBlobtypeHandler"/>
+        <collection property="westernGameLines" column="gamaID" javaType="ArrayList" ofType="com.azhar.lottery.bean.game.WesternGameLines">
+            <id column="gameID" property="gameID"/>
+            <result column="homeTeamLines" property="homeTeamLines"/>
+            <result column="visitingTeamLines" property="visitingTeamLines"/>
+            <result column="drawLines" property="drawLines"/>
+            <result column="compName" property="compName"/>
+        </collection>
+        <collection property="asiaGameLines" column="gamaID" javaType="ArrayList" ofType="com.azhar.lottery.bean.game.AsiaGameLines">
+            <id column="gameID" property="gameID"/>
+            <result column="asisHomeTeamLines" property="asisHomeTeamLines"/>
+            <result column="asisVisitingTeamLines" property="asisVisitingTeamLines"/>
+            <result column="asisHandicap" property="asisHandicap"/>
+            <result column="compName" property="compName"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectGameInfoByUserID" resultMap="resultMapGameInfo">
+        SELECT g.* ,w.*FROM  game_info g left join western_lines w on g.id=w.gameID where g.userID=#{userID}
+        ORDER BY CONVERT (g.gameTime using utf8)
+    </select>
+
+    <select id="selectGameInfoByLinesAllForWestern" resultMap="resultMapGameInfo">
+        SELECT g.* ,w.*FROM  game_info g left join western_lines w on g.id=w.gameID where g.userID=#{userID}
+    and
+    (w.drawLines=#{lines}  or w.homeTeamLines=#{lines} or w.visitingTeamLines=#{lines}) ;
+    </select>
+
+    <select id="selectGameInfoByLinesAllForAsia" resultMap="resultMapGameInfo">
+        SELECT g.* ,w.*FROM  game_info g left join asia_lines w on g.id=w.gameID where g.userID=#{userID}
+        and
+        (w.asisHomeTeamLines=#{lines}  or w.asisVisitingTeamLines=#{lines} or w.asisHandicap=#{lines}) ;
+    </select>
+
+    <select id="selectPartnerCarByParam" parameterType="java.util.Map" resultMap="resultMapGameInfo">
+        select c.*,o.name as orgName,t.business_status as businessStatus from game_info c
+        left join organization o on c.org_id = o.id
+        left join time_share t on c.id = t.car_id
+        where 1 = 1
+        <if test="carVO.number != null and  carVO.number != ''">
+            and c.number like '%${carVO.number}%'
+        </if>
+        <if test="carVO.orgId != null and  carVO.orgId != ''">
+            and c.org_id = #{carVO.orgId}
+        </if>
+        AND c.org_id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by convert(c.number using gbk) COLLATE gbk_chinese_ci
+    </select>
+    <select id="selectCarById" parameterType="string" resultMap="resultMapGameInfo">
+        select c.* from game_info c left join organization o on c.org_id = o.id where c.id = #{id} order by convert(c.number using gbk) COLLATE gbk_chinese_ci
+    </select>
+    <select id="selectCarByNum" parameterType="string" resultMap="resultMapGameInfo">
+        select * from game_info where number = #{number} order by convert(number using gbk) COLLATE gbk_chinese_ci
+    </select>
+    <select id="selectCarByParam" parameterType="com.azhar.lottery.bean.game.GameInfo" resultMap="resultMapGameInfo">
+        select c.*,o.name as orgName,t.business_status as businessStatus from game_info c
+        left join organization o on c.org_id = o.id
+        left join time_share t on c.id = t.car_id
+        <where>
+            <if test="id != null and  id != ''">
+                and c.id = #{id}
+            </if>
+            <if test="number != null and  number != ''">
+                and c.number like '%${number}%'
+            </if>
+            <if test="orgId != null and  orgId != ''">
+                and c.org_id = #{orgId}
+            </if>
+            <if test="orgName != null and  orgName != ''">
+                and o.name like '%${orgName}%'
+            </if>
+        </where>
+        order by convert(c.number using gbk) COLLATE gbk_chinese_ci
+    </select>
+    <select id="selectCarByOrgId" parameterType="string" resultMap="resultMapGameInfo">
+        select c.*,o. name as orgName from game_info c left join organization o on o.id=c.org_id where c.org_id = #{orgId} order by convert(number using gbk) COLLATE gbk_chinese_ci
+    </select>
+    <select id="selectIdleCarByOrgId" parameterType="string" resultMap="resultMapGameInfo">
+        select c.* from game_info c where c.org_id = #{orgId} and not exists(select 1 from time_share t where t.car_id = c.id)
+        order by convert(number using gbk) COLLATE gbk_chinese_ci
+    </select>
+</mapper>
