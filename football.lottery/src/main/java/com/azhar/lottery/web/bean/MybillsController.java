@@ -48,6 +48,12 @@ public class MybillsController {
     }
 
 
+    /**
+     * 获取账单信息
+     * @param userID  用户ID
+     * @return
+     */
+
     @RequestMapping(value = "mybills/getAll",method = RequestMethod.GET)
     @ResponseBody
     public List<Mybills> selectAllBills(String userID){
