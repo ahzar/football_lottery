@@ -49,7 +49,7 @@ public class MybillsController {
 
 
     /**
-     * 获取账单
+     * 获取账
      * @param userID  用户ID
      * @return
      */
