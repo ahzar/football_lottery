@@ -57,10 +57,13 @@ public class MybillsController {
     @RequestMapping(value = "mybills/getAll",method = RequestMethod.GET)
     @ResponseBody
     public List<Mybills> selectAllBills(String userID){
+        System.out.println(userID);
         List<Mybills> mybills = null;
         if(userID!=null){
             try {
                 mybills = mybillsService.selectAllBills(userID);
+                System.out.println(mybills.toString());
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
