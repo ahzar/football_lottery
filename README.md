@@ -4,4 +4,8 @@ my football-lottery for wechat
 
 test git
 
-again
+again=
+
+111111
+
+222222
