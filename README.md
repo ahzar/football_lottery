@@ -2,6 +2,8 @@
 my football-lottery for wechat
 
 aaaaaaa
+
+bbbbbbb
 test git
 
 again=
