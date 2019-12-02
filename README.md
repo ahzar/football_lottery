@@ -1,5 +1,6 @@
 # football_lottery
-my football-lottery for wechat
+my football-lottery for wechat=
+cccccc
 aaaaaaa
 bbbbbbb
 test git
